@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Destruidor de Arquivos</title>
+  <link rel="stylesheet" href="_css/style.css">
+  <script src="_js/code.js" defer></script>
+</head>
+
+<body>
+  <section id="s1">
+    <h1>💥 DESTRUIDOR DE ARQUIVOS</h1>
+    <p>Apagar arquivos nunca foi tão divertido: escolha uma pasta, marque o que quer destruir e acabe com cada arquivo
+      de cinco jeitos diferentes: marreta, fogo, triturador, bombas ou buraco negro.</p>
+    <div class="aviso">⚠ No modo real os arquivos são <b>APAGADOS DE VERDADE</b> e <b>não vão para a lixeira</b>. Você
+      escolhe a pasta, marca arquivo por arquivo e ainda precisa digitar <b>APAGAR</b> para confirmar. (Subpastas também
+      são vasculhadas).</div>
+    <button id="bPasta">📂 Escolher pasta</button>
+    <button id="bDemo" class="alt">🧪 Treinar com arquivos de mentira</button>
+    <p class="peq">Precisa de Chrome, Edge ou Opera (o Firefox e o Safari não permitem apagar arquivos por páginas web).
+      Não instala nada: é só abrir este arquivo.</p>
+  </section>
+  <section id="s2" hidden>
+    <h2 id="tit"></h2>
+    <div class="barra"><button id="bTodos" class="alt">Marcar todos</button><button id="bNenhum" class="alt">Desmarcar
+        todos</button><span id="cont"></span></div>
+    <div id="lista"></div>
+    <label id="lt"><input type="checkbox" id="treino"> Modo treino (não apaga nada de verdade)</label>
+    <label id="lm">Modo de destruição: <select id="modo">
+        <option value="marreta">🔨 Marreta (clique e esmague)</option>
+        <option value="fogo">🔥 Lareira (fogo que se espalha)</option>
+        <option value="triturador">🗑️ Triturador (arraste na fenda)</option>
+        <option value="bombas">💣 Bombas (explosões em cadeia)</option>
+        <option value="buraco">🕳️ Buraco negro (suga tudo)</option>
+      </select></label>
+    <div id="conf" hidden>Para confirmar, digite <b>APAGAR</b>: <input id="txt" autocomplete="off"></div>
+    <button id="bGo" disabled>💥 Começar a destruição</button>
+    <button id="bVolta" class="alt">Voltar</button>
+  </section>
+  <section id="s3" hidden>
+    <header>
+      <div>PONTOS <b id="sc">0</b></div>
+      <div>COMBO <b id="cb">x1</b></div>
+      <div>RESTAM <b id="rs">0</b></div>
+      <div>APAGADOS <b id="ap">0</b></div>
+    </header>
+    <canvas id="c"></canvas>
+    <p class="peq" id="dica"></p>
+    <p class="peq">M: som liga/desliga</p>
+    <div id="log"></div>
+  </section>
+  <section id="s4" hidden>
+    <h1>🏁 Missão cumprida!</h1>
+    <div id="res"></div>
+    <button id="bNova">Jogar de novo</button>
+  </section>
+</body>
+
+</html>

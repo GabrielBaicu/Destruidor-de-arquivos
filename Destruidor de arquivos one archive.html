@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Destruidor de Arquivos</title>
+  <style>
+    [hidden] {
+      display: none !important
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #12121c;
+      color: #eee;
+      font-family: "Courier New", monospace;
+      display: flex;
+      justify-content: center;
+      padding: 20px
+    }
+
+    section {
+      width: 100%;
+      max-width: 780px
+    }
+
+    h1 {
+      color: #ff6a3d;
+      text-align: center;
+      margin: 10px 0
+    }
+
+    h2 {
+      color: #ffb347;
+      margin: 6px 0 10px;
+      word-break: break-all
+    }
+
+    p {
+      line-height: 1.5
+    }
+
+    .peq {
+      font-size: 12px;
+      color: #99a;
+      text-align: center
+    }
+
+    .aviso {
+      background: #3a1414;
+      border: 2px solid #ff4040;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 14px 0;
+      line-height: 1.5
+    }
+
+    button {
+      padding: 11px 16px;
+      margin: 6px 6px 6px 0;
+      background: #ff6a3d;
+      color: #fff;
+      border: 0;
+      border-radius: 7px;
+      font: bold 14px "Courier New", monospace;
+      cursor: pointer
+    }
+
+    button.alt {
+      background: #34385a
+    }
+
+    button:disabled {
+      background: #2a2a35;
+      color: #777;
+      cursor: not-allowed
+    }
+
+    .barra {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    #cont {
+      color: #ffb347;
+      margin-left: auto
+    }
+
+    #lista {
+      max-height: 46vh;
+      overflow: auto;
+      border: 1px solid #34385a;
+      border-radius: 8px;
+      margin: 10px 0;
+      background: #0c0c14
+    }
+
+    #lista label {
+      display: flex;
+      gap: 10px;
+      padding: 7px 10px;
+      border-bottom: 1px solid #1d1d2b;
+      cursor: pointer;
+      font-size: 14px
+    }
+
+    #lista label span {
+      flex: 1;
+      word-break: break-all
+    }
+
+    #lista label i {
+      color: #889;
+      font-style: normal
+    }
+
+    #lista label.p {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    #lt,
+    #conf {
+      display: block;
+      margin: 8px 0
+    }
+
+    input[type=text],
+    #txt {
+      background: #000;
+      color: #fff;
+      border: 1px solid #ff6a3d;
+      padding: 6px;
+      font: inherit
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      color: #ffb347;
+      margin-bottom: 6px
+    }
+
+    header b {
+      color: #fff
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      background: #1a1a2a;
+      border: 3px solid #ff6a3d;
+      border-radius: 8px;
+      cursor: none
+    }
+
+    #log {
+      margin-top: 8px;
+      height: 8.5em;
+      overflow: hidden;
+      font-size: 13px;
+      color: #9c9;
+      background: #07070d;
+      border: 1px solid #232336;
+      border-radius: 6px;
+      padding: 6px
+    }
+
+    #res {
+      background: #0c0c14;
+      border: 1px solid #34385a;
+      border-radius: 8px;
+      padding: 14px;
+      line-height: 1.7;
+      word-break: break-all
+    }
+
+    #lm {
+      display: block;
+      margin: 10px 0;
+      color: #ffb347
+    }
+
+    select {
+      background: #000;
+      color: #fff;
+      border: 1px solid #ff6a3d;
+      padding: 6px;
+      font: inherit
+    }
+  </style>
+</head>
+
+<body>
+  <section id="s1">
+    <h1>💥 DESTRUIDOR DE ARQUIVOS</h1>
+    <p>Apagar arquivos nunca foi tão divertido: escolha uma pasta, marque o que quer destruir e acabe com cada arquivo
+      de cinco jeitos diferentes: marreta, fogo, triturador, bombas ou buraco negro.</p>
+    <div class="aviso">⚠ No modo real os arquivos são <b>APAGADOS DE VERDADE</b> e <b>não vão para a lixeira</b>. Você
+      escolhe a pasta, marca arquivo por arquivo e ainda precisa digitar <b>APAGAR</b> para confirmar. (Subpastas também
+      são vasculhadas).</div>
+    <button id="bPasta">📂 Escolher pasta</button>
+    <button id="bDemo" class="alt">🧪 Treinar com arquivos de mentira</button>
+    <p class="peq">Precisa de Chrome, Edge ou Opera (o Firefox e o Safari não permitem apagar arquivos por páginas web).
+      Não instala nada: é só abrir este arquivo.</p>
+  </section>
+  <section id="s2" hidden>
+    <h2 id="tit"></h2>
+    <div class="barra"><button id="bTodos" class="alt">Marcar todos</button><button id="bNenhum" class="alt">Desmarcar
+        todos</button><span id="cont"></span></div>
+    <div id="lista"></div>
+    <label id="lt"><input type="checkbox" id="treino"> Modo treino (não apaga nada de verdade)</label>
+    <label id="lm">Modo de destruição: <select id="modo">
+        <option value="marreta">🔨 Marreta (clique e esmague)</option>
+        <option value="fogo">🔥 Lareira (fogo que se espalha)</option>
+        <option value="triturador">🗑️ Triturador (arraste na fenda)</option>
+        <option value="bombas">💣 Bombas (explosões em cadeia)</option>
+        <option value="buraco">🕳️ Buraco negro (suga tudo)</option>
+      </select></label>
+    <div id="conf" hidden>Para confirmar, digite <b>APAGAR</b>: <input id="txt" autocomplete="off"></div>
+    <button id="bGo" disabled>💥 Começar a destruição</button>
+    <button id="bVolta" class="alt">Voltar</button>
+  </section>
+  <section id="s3" hidden>
+    <header>
+      <div>PONTOS <b id="sc">0</b></div>
+      <div>COMBO <b id="cb">x1</b></div>
+      <div>RESTAM <b id="rs">0</b></div>
+      <div>APAGADOS <b id="ap">0</b></div>
+    </header>
+    <canvas id="c"></canvas>
+    <p class="peq" id="dica"></p>
+    <p class="peq">M: som liga/desliga</p>
+    <div id="log"></div>
+  </section>
+  <section id="s4" hidden>
+    <h1>🏁 Missão cumprida!</h1>
+    <div id="res"></div>
+    <button id="bNova">Jogar de novo</button>
+  </section>
+  <script>
+    (() => {
+
+      // Atalho para pegar elementos pelo ID e constantes utilitárias
+      const $ = id => document.getElementById(id), R = (a, b) => a + Math.random() * (b - a), W = 760, H = 520, PROT = ['index.html', 'style.css', 'game.js'];
+      // Mapeamento de emojis para cada tipo de extensão de arquivo
+      const EMO = { jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', mp3: '🎵', wav: '🎵', mp4: '🎬', mkv: '🎬', avi: '🎬', pdf: '📕', doc: '📄', docx: '📄', txt: '📝', xls: '📊', xlsx: '📊', csv: '📊', zip: '📦', rar: '📦', exe: '👾', ppt: '📽️', pptx: '📽️' };
+      // Mapeamento de cores para os tipos de arquivos
+      const CORF = { jpg: '#4aa8ff', jpeg: '#4aa8ff', png: '#4aa8ff', gif: '#4aa8ff', mp3: '#4cff6a', wav: '#4cff6a', mp4: '#b25cff', mkv: '#b25cff', avi: '#b25cff', pdf: '#ff9a2e', doc: '#ff9a2e', docx: '#ff9a2e', txt: '#ff9a2e', zip: '#ffd93a', rar: '#ffd93a', exe: '#ff3b3b' };
+      // Lista de arquivos falsos para o modo de treino
+      const DEMO = [['ferias_2019.jpg', 2400000], ['subpasta/relatorio_final_v2.docx', 180000], ['musica_que_eu_amo.mp3', 5200000], ['planilha_gastos.xlsx', 90000],
+      ['video_da_festa.mp4', 88000000], ['trabalho_escola.pdf', 730000], ['senhas.txt', 400], ['foto_borrada.png', 1500000], ['download(1)(1).zip', 12000000], ['nao_abrir.exe', 3000000], ['apresentacao.pptx', 4100000], ['meme_antigo.gif', 900000]];
+      // Variáveis de estado global do jogo
+      let dir = null, files = [], treino = true, alvos = [], fila = [], parts = [], score = 0, combo = 1, comboT = 0, apagados = [], falhas = 0, pend = 0, shake = 0, mouse = { x: W / 2, y: H / 2 }, held = false, tick = 0, state = 'menu', mudo = false, ac, M = null, modo = 'marreta';
+      const cv = $('c'), g = cv.getContext('2d'); cv.width = W; cv.height = H;
+      // Funções utilitárias (escape HTML, formatação de tamanho de arquivo, etc)
+      const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const fmt = b => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : b < 1073741824 ? (b / 1048576).toFixed(1) + ' MB' : (b / 1073741824).toFixed(1) + ' GB';
+      const ext = n => n.split('.').pop().toLowerCase(), emo = n => EMO[ext(n)] || '📁', fcor = n => CORF[ext(n)] || '#ff8a2e', short = n => n.length > 18 ? n.slice(0, 16) + '…' : n;
+      const tela = n => {
+        ['s1', 's2', 's3', 's4'].forEach((id, i) => $(id).hidden = i != n - 1)
+      };
+      function som(f, d, tipo, v, f2) {
+        try {
+          ac = ac || new AudioContext(); const o = ac.createOscillator(), gn = ac.createGain(); o.type = tipo || 'square'; o.frequency.value = f;
+          if (f2) o.frequency.exponentialRampToValueAtTime(f2, ac.currentTime + d); gn.gain.value = v || .07; o.connect(gn); gn.connect(ac.destination); o.start();
+          gn.gain.exponentialRampToValueAtTime(.001, ac.currentTime + d); o.stop(ac.currentTime + d)
+        } catch (e) { }
+      }
+      const sm = (...a) => {
+        if (!mudo) som(...a)
+      };
+      const pt = (x, y, vx, vy, t, c, s, o) => parts.push(Object.assign({ x, y, vx, vy, t, t0: t, c, s }, o || {}));
+
+      /* ---------- escolher pasta / lista ---------- */
+      // --- LÓGICA DE ESCOLHA DE PASTA E ARQUIVOS ---
+
+      // Abre o seletor nativo de diretórios (File System Access API)
+      async function escolher() {
+        if (!window.showDirectoryPicker) { alert('Este navegador não permite apagar arquivos. Abra no Chrome ou no Edge.'); return }
+        try { dir = await showDirectoryPicker({ mode: 'readwrite' }) } catch (e) { return }
+        files = [];
+
+        async function varrer(dh, caminho = "") {
+          for await (const [name, h] of dh.entries()) {
+            if (files.length >= 300) break;
+            const relPath = caminho ? `${caminho}/${name}` : name;
+            if (h.kind === 'directory') {
+              await varrer(h, relPath);
+            } else if (h.kind === 'file') {
+              let size = 0; try { size = (await h.getFile()).size } catch (e) { }
+              files.push({ name: relPath, fileName: name, parentHandle: dh, size, m: false, prot: PROT.includes(name) });
+            }
+          }
+        }
+
+        await varrer(dir);
+        treino = false;
+        lista('Pasta: ' + dir.name + (files.length >= 300 ? ' (mostrando 300 primeiros com subpastas)' : ' (com subpastas)'))
+      }
+
+      // Carrega os arquivos falsos no modo de treino
+      function demo() { dir = null; files = DEMO.map(([name, size]) => ({ name, fileName: name, parentHandle: null, size, m: false, prot: false })); treino = true; lista('Arquivos de mentira (treino)') }
+      // Exibe a lista de arquivos encontrados na tela
+      function lista(t) {
+        tela(2); $('tit').textContent = t; $('treino').checked = treino; $('treino').disabled = !dir; $('txt').value = '';
+        $('lista').innerHTML = files.length ? files.map((f, i) => `<label class="${f.prot ? 'p' : ''}"><input type="checkbox" data-i="${i}" ${f.prot ? 'disabled' : ''}><span>${emo(f.name)} ${esc(f.name)}${f.prot ? ' 🔒 (arquivo do jogo)' : ''}</span><i>${fmt(f.size)}</i></label>`).join('') : '<p style="padding:12px">Nenhum arquivo encontrado.</p>';
+        atualiza()
+      }
+      // Atualiza a contagem de arquivos marcados e valida o botão de começar
+      function atualiza() {
+        treino = $('treino').checked; const n = files.filter(f => f.m && !f.prot).length;
+        $('cont').textContent = n + ' marcado(s)'; $('conf').hidden = treino;
+        $('bGo').disabled = !(n > 0 && (treino || $('txt').value.trim().toUpperCase() == 'APAGAR'));
+        $('bGo').textContent = treino ? '🧪 Começar o treino' : '💥 Destruir ' + n + ' arquivo(s) DE VERDADE'
+      }
+      $('lista').addEventListener('change', e => {
+        const i = e.target.dataset && e.target.dataset.i; if (i !== undefined) { files[+i].m = !!e.target.checked; atualiza() }
+      });
+      $('treino').addEventListener('change', atualiza); $('txt').addEventListener('input', atualiza);
+      $('bTodos').addEventListener('click', () => {
+        files.forEach(f => f.m = !f.prot); document.querySelectorAll('#lista input').forEach(c => c.checked = true); atualiza()
+      });
+      $('bNenhum').addEventListener('click', () => {
+        files.forEach(f => f.m = false); document.querySelectorAll('#lista input').forEach(c => c.checked = false); atualiza()
+      });
+
+      /* ---------- núcleo ---------- */
+      // --- LÓGICA PRINCIPAL DO JOGO ---
+
+      // Inicia o jogo, configurando alvos e limpando o estado
+      function comecar() {
+        modo = $('modo').value || 'marreta'; M = MODOS[modo];
+        fila = files.filter(f => f.m && !f.prot).map(f => {
+
+          const l = Math.log10(f.size + 10), hp = Math.min(8, Math.max(2, Math.floor(l / 1.2)));
+          return { f, r: 26 + Math.min(20, l * 2.5), hp, max: hp, x: 0, y: 0, fl: 0, slot: -1 }
+        });
+        alvos = []; parts = []; score = 0; combo = 1; comboT = 0; apagados = []; falhas = 0; pend = 0; shake = 0; held = false; $('log').innerHTML = '';
+        M.init && M.init(); $('dica').textContent = M.dica; state = 'jogo'; tela(3);
+        log(treino ? '🧪 Modo treino: nada será apagado.' : '⚠ Modo real: cada arquivo destruído é apagado da pasta.')
+      }
+      function log(t) { const d = $('log'); d.innerHTML += esc(t) + '<br>'; const l = d.innerHTML.split('<br>'); if (l.length > 8) d.innerHTML = l.slice(-8).join('<br>') }
+      // Posiciona os arquivos em slots fixos na tela (usado nos modos fogo e triturador)
+      function slotPlace(t, slots) { for (let i = 0; i < slots.length; i++)if (!alvos.some(a => a.slot === i)) { t.slot = i; t.x = slots[i][0]; t.y = slots[i][1]; return true } return false }
+      // Função para gerar efeitos visuais de explosão/partículas
+      function boom(x, y, n, cores) { for (let i = 0; i < n; i++) { const a = R(0, 7), s = R(1, 7); pt(x, y, Math.cos(a) * s, Math.sin(a) * s, R(25, 55), cores[i % cores.length], R(3, 8), { g: .15 }) } }
+      // Remove um arquivo da tela, toca o som e aciona a exclusão real
+      function destruir(t, tipo) {
+        if (!alvos.includes(t)) return; alvos = alvos.filter(a => a != t);
+        const pts = (100 + Math.min(100, Math.floor(Math.log10(t.f.size + 1) * 10))) * combo; score += pts;
+        if (tipo == 'cinza') { for (let i = 0; i < 25; i++)pt(t.x + R(-t.r, t.r), t.y, R(-1, 1), R(-3, -.5), R(40, 90), '#888', R(3, 7), { circ: 1, g: -.02 }); sm(150, .3, 'triangle', .05, 60) }
+        else if (tipo == 'tritura') { boom(t.x, t.y + t.r, 14, ['#fff', '#ddd', fcor(t.f.name)]); sm(500, .15, 'square', .05, 200) }
+        else if (tipo == 'sugado') { for (let i = 0; i < 30; i++) { const a = R(0, 7); pt(mouse.x, mouse.y, Math.cos(a) * R(1, 5), Math.sin(a) * R(1, 5), R(20, 40), '#c58bff', R(2, 5), { circ: 1 }) } shake = 6; sm(300, .4, 'sine', .1, 40) }
+        else { boom(t.x, t.y, 60, ['#ff6a3d', '#ffd24a', '#fff', '#ff3b3b']); shake = 14; sm(110, .5, 'sawtooth', .15, 35); sm(60, .4, 'square', .12, 20) }
+        pt(t.x, t.y, 0, -1.2, 50, '#ffd24a', 0, { txt: '+' + pts + ' x' + combo });
+        if (modo != 'marreta') { combo = Math.min(combo + 1, 10); comboT = 150 }
+        apagar(t.f)
+      }
+      // Exclui o arquivo fisicamente usando o File System API
+      async function apagar(f) {
+        pend++;
+        try {
+          if (!treino && f.parentHandle) {
+            await f.parentHandle.removeEntry(f.fileName);
+          }
+          apagados.push(f.name); log('💥 ' + f.name + (treino ? ' (treino)' : ' apagado de verdade'))
+        }
+        catch (e) { falhas++; log('⚠ Falha ao apagar ' + f.name + ': ' + (e.name || 'erro')) }
+        pend--; fim()
+      }
+      // Finaliza o jogo e mostra a tela de resultados
+      function fim() {
+        if (state != 'jogo' || alvos.length || fila.length || pend > 0) return; state = 'fim';
+        $('res').innerHTML = `Pontuação: <b>${score}</b><br>Arquivos destruídos: <b>${apagados.length}</b>${falhas ? `<br>Falhas: <b>${falhas}</b>` : ''}<br>${treino ? '🧪 Foi só treino: nenhum arquivo foi apagado.' : apagados.length ? '✅ Esses arquivos foram removidos de verdade da pasta.' : ''}<br><br>${apagados.map(esc).join('<br>')}`; tela(4)
+      }
+      // Desenha o 'card' que representa um arquivo na tela (caixa, ícone, nome)
+      function card(t, o) {
+        o = o || {}; g.save(); g.translate(t.x, t.y); if (o.rot) g.rotate(o.rot); g.scale(o.sx || o.sc || 1, o.sy || o.sc || 1);
+        const r = t.r, s = r * 2; g.fillStyle = o.fl ? '#fff' : '#2a2f45'; g.strokeStyle = '#ff6a3d'; g.lineWidth = 3; g.fillRect(-r, -r, s, s); g.strokeRect(-r, -r, s, s);
+        g.textAlign = 'center'; g.font = (r * .9) + 'px serif'; g.fillStyle = '#fff'; g.fillText(emo(t.f.name), 0, r * .3);
+        if (o.char) { g.fillStyle = 'rgba(0, 0, 0, ' + o.char + ')'; g.fillRect(-r, -r, s, s) } g.restore();
+        if (!o.nolabel) { g.font = '11px Courier New'; g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(short(t.f.fileName || t.f.name), t.x, t.y + t.r * (o.sc || 1) + 13) }
+      }
+      // Desenha o fundo e a grade do cenário
+      function grade(c) {
+        g.fillStyle = c; g.fillRect(0, 0, W, H); g.strokeStyle = 'rgba(255, 255, 255, .04)'; g.lineWidth = 1;
+        for (let x = 0; x < W; x += 40) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke() } for (let y = 0; y < H; y += 40) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke() }
+      }
+
+      /* ---------- modos ---------- */
+      // --- MODOS DE DESTRUIÇÃO ---
+      // Define as regras, física, controles e visual de cada modo de jogo
+      const MODOS = {
+        // MODO 1: MARRETA (arquivos quicam, você bate para quebrar)
+        marreta: {
+          max: 14, cur: '🔨', bcd: 0, dica: 'Clique: marreta 🔨 • Botão direito ou tecla B: bomba de área 💣 (recarrega)',
+          init() { this.bcd = 0 },
+          place(t) { t.x = R(60, W - 60); t.y = R(60, H - 60); t.vx = R(-2, 2) || 1; t.vy = R(-1.6, 1.6) || 1; return true },
+          upd() {
+            for (const t of alvos) {
+              t.x += t.vx; t.y += t.vy; if (t.x < t.r || t.x > W - t.r) t.vx *= -1; if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
+              t.x = Math.max(t.r, Math.min(W - t.r, t.x)); t.y = Math.max(t.r, Math.min(H - t.r, t.y)); if (t.fl > 0) t.fl--
+            } if (this.bcd > 0) this.bcd--
+          },
+          drw() {
+            grade('#1a1a2a'); for (const t of alvos) { card(t, { fl: t.fl }); g.fillStyle = '#400'; g.fillRect(t.x - t.r, t.y - t.r - 8, t.r * 2, 5); g.fillStyle = '#4f4'; g.fillRect(t.x - t.r, t.y - t.r - 8, t.r * 2 * t.hp / t.max, 5) }
+            if (this.bcd) { g.fillStyle = '#ffb347'; g.font = '12px Courier New'; g.fillText('bomba ' + Math.ceil(this.bcd / 60) + 's', mouse.x, mouse.y + 30) }
+          },
+          acerta(t, d, x, y) {
+            t.hp -= d; t.fl = 6; combo = Math.min(combo + 1, 10); comboT = 100; boom(x, y, 8, ['#fff', '#ffb347']); sm(220 + combo * 30, .08, 'square', .06);
+            pt(t.x, t.y - t.r, 0, -1, 25, '#fff', 0, { txt: '-' + d }); if (t.hp <= 0) destruir(t, 'boom')
+          },
+          bomba(x, y) {
+            if (this.bcd) return; this.bcd = 180; shake = 10; sm(90, .4, 'sawtooth', .12, 30); pt(x, y, 0, 0, 20, '#ffb347', 90, { ring: 1 }); boom(x, y, 30, ['#ffb347', '#ff6a3d']);
+            for (const t of alvos.slice()) if (Math.hypot(t.x - x, t.y - y) < 90 + t.r) this.acerta(t, 2, t.x, t.y)
+          },
+          down(p, b) {
+            if (b == 2) return this.bomba(p.x, p.y); const t = alvos.slice().reverse().find(t => Math.abs(t.x - p.x) <= t.r && Math.abs(t.y - p.y) <= t.r);
+            if (t) this.acerta(t, 1, p.x, p.y); else { combo = 1; sm(90, .06, 'triangle', .05) }
+          },
+          key(k) { if (k == 'b') this.bomba(mouse.x, mouse.y) }
+        },
+
+        // MODO 2: FOGO (arquivos parados, fogo se propaga com o tempo)
+        fogo: {
+          max: 15, cur: '🔥', dica: 'Clique num arquivo para acendê-lo: o fogo se espalha sozinho pelos vizinhos! 🔥',
+          slots: (() => {
+            const s = []; for (let r = 0; r < 3; r++)for (let c = 0; c < 5; c++)s.push([90 + c * 145, 110 + r * 140]); return s
+          })(),
+          place(t) { t.r = Math.min(t.r, 36); t.b = 0; t.fire = 0; return slotPlace(t, this.slots) },
+          down(p) { const t = alvos.find(t => !t.fire && Math.abs(t.x - p.x) <= t.r && Math.abs(t.y - p.y) <= t.r); if (t) { t.fire = 1; sm(120, .3, 'sawtooth', .08, 400) } },
+          upd() {
+            for (const t of alvos.slice()) {
+              if (!t.fire) continue; t.b += 1 / (200 + Math.min(300, Math.log10(t.f.size + 10) * 45));
+              if (parts.length < 1400) {
+                const c = fcor(t.f.name);
+                for (let k = 0; k < 3; k++)pt(t.x + R(-t.r, t.r) * .8, t.y + R(-t.r * .3, t.r), R(-.3, .3), R(-2.4, -.8), R(28, 46), k ? '#ffd24a' : c, R(5, 11), { circ: 1, g: -.03 });
+                if (Math.random() < .25) pt(t.x + R(-t.r, t.r), t.y - t.r, R(-.4, .4), R(-1.2, -.4), 70, '#556', R(6, 12), { circ: 1, g: -.01 });
+                if (Math.random() < .2) pt(t.x, t.y, R(-1.5, 1.5), R(-4, -1.5), R(30, 60), '#ffb347', 2, { g: .02 })
+              }
+              if (tick % 4 == 0 && Math.random() < .5) sm(R(80, 260), .04, 'sawtooth', .025);
+              for (const o of alvos) if (!o.fire && Math.hypot(o.x - t.x, o.y - t.y) < 165 && Math.random() < .012) o.fire = 1;
+              if (t.b >= 1) destruir(t, 'cinza')
+            }
+          },
+          drw() {
+            g.fillStyle = '#150b08'; g.fillRect(0, 0, W, H); g.strokeStyle = 'rgba(120, 50, 30, .25)'; g.lineWidth = 2;
+            for (let y = 0; y < H; y += 26) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); for (let x = (y / 26 % 2) * 30; x < W; x += 60) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 26); g.stroke() } }
+            g.globalAlpha = .12; g.fillStyle = '#ff7a1a'; for (const t of alvos) if (t.fire) { g.beginPath(); g.arc(t.x, t.y, t.r * 3, 0, 7); g.fill() } g.globalAlpha = 1;
+            for (const t of alvos) card(t, { char: t.b * .9, sc: 1 - .3 * t.b })
+          }
+        },
+
+        // MODO 3: TRITURADOR (arrastar e soltar na esteira/fenda)
+        triturador: {
+          max: 8, cur: '✋', SX: W / 2, SW: 260, SY: H - 150, dica: 'Arraste os arquivos até a boca do triturador e solte em cima da fenda! 🗑️',
+          slots: (() => {
+            const s = []; for (let r = 0; r < 2; r++)for (let c = 0; c < 4; c++)s.push([110 + c * 180, 80 + r * 130]); return s
+          })(),
+          place(t) { t.r = Math.min(t.r, 38); t.sh = 0; t.dr = 0; return slotPlace(t, this.slots) },
+          down(p) {
+            const t = alvos.slice().reverse().find(t => !t.sh && Math.abs(t.x - p.x) <= t.r && Math.abs(t.y - p.y) <= t.r);
+            if (t) { t.dr = 1; t.slot = -1; t.ox = p.x - t.x; t.oy = p.y - t.y; alvos = alvos.filter(a => a != t); alvos.push(t); sm(300, .05, 'triangle', .05) }
+          },
+          move(p) { const t = alvos.find(t => t.dr); if (t) { t.x = p.x - t.ox; t.y = p.y - t.oy } },
+          up() {
+            const t = alvos.find(t => t.dr); if (!t) return; t.dr = 0;
+            if (Math.abs(t.x - this.SX) < this.SW / 2 && t.y + t.r > this.SY - 30) { t.sh = 1; t.x = Math.max(this.SX - this.SW / 2 + t.r + 4, Math.min(this.SX + this.SW / 2 - t.r - 4, t.x)); t.y = this.SY - t.r }
+          },
+          upd() {
+            for (const t of alvos.slice()) if (t.sh) {
+              t.y += 1.6;
+              if (tick % 3 == 0) pt(t.x + R(-t.r, t.r), this.SY + 78, R(-1, 1), R(1, 3), R(30, 50), ['#fff', '#ddd', fcor(t.f.name)][R(0, 3) | 0], R(3, 6), { g: .12 });
+              if (tick % 5 == 0) sm(R(70, 130), .06, 'sawtooth', .05); if (t.y - t.r > this.SY) destruir(t, 'tritura')
+            }
+          },
+          drw() {
+            grade('#16202a'); const { SX, SW, SY } = this;
+            g.fillStyle = '#0a0f14'; g.fillRect(SX - SW / 2 - 24, SY + 80, SW + 48, H - SY - 80);
+            g.fillStyle = '#ccc'; g.fillRect(SX - SW / 2, H - Math.min(40, apagados.length * 3), SW, Math.min(40, apagados.length * 3));
+            for (const t of alvos) if (!t.sh) card(t, {});
+            for (const t of alvos) if (t.sh) {
+              g.save(); g.beginPath(); g.rect(0, 0, W, SY); g.clip(); card(t, { nolabel: 1 }); g.restore();
+              const L = Math.min(2 * t.r + 10, t.y + t.r - SY); g.fillStyle = fcor(t.f.name);
+              for (let k = 0; k < 10; k++)g.fillRect(t.x - t.r + (k + .5) * t.r / 5 + Math.sin(tick * .2 + k) * 3 - 2, SY + 80, 4, Math.max(0, L))
+            }
+            g.fillStyle = '#4a4f5a'; g.fillRect(SX - SW / 2 - 24, SY, SW + 48, 80); g.fillStyle = '#000'; g.fillRect(SX - SW / 2, SY - 6, SW, 10);
+            g.strokeStyle = '#999'; g.lineWidth = 2;
+            for (let k = 0; k < 6; k++) {
+              const gx = SX - SW / 2 + 25 + k * (SW - 50) / 5, gy = SY + 40, a = tick * .12 * (k % 2 ? 1 : -1); g.beginPath(); g.arc(gx, gy, 15, 0, 7); g.stroke();
+              for (let s = 0; s < 4; s++) { g.beginPath(); g.moveTo(gx, gy); g.lineTo(gx + Math.cos(a + s * 1.57) * 15, gy + Math.sin(a + s * 1.57) * 15); g.stroke() }
+            }
+            g.fillStyle = '#ff6a3d'; g.font = 'bold 12px Courier New'; g.textAlign = 'center'; g.fillText('TRITURADOR', SX, SY + 76)
+          }
+        },
+
+        // MODO 4: BOMBAS (reação em cadeia com dinamites)
+        bombas: {
+          max: 18, cur: '🧨', bs: [], cd: 0, dica: 'Clique: dinamite 🧨 (raio médio) • Botão direito: mega bomba 💣 (raio grande). Explosões em cadeia!',
+          init() { this.bs = []; this.cd = 0 },
+          place(t) { t.r = Math.min(t.r, 30); for (let k = 0; k < 40; k++) { t.x = R(50, W - 50); t.y = R(50, H - 60); if (!alvos.some(a => Math.hypot(a.x - t.x, a.y - t.y) < a.r + t.r + 14)) break } return true },
+          down(p, b) {
+            if (this.bs.length >= 10) return; const big = b == 2; if (big && this.cd > 0) return; if (big) this.cd = 240;
+            this.bs.push({ x: p.x, y: p.y, t: big ? 200 : 140, R: big ? 170 : 90, big }); sm(big ? 200 : 400, .1, 'square', .06)
+          },
+          upd() {
+            if (this.cd > 0) this.cd--;
+            for (const b of this.bs.slice()) {
+              if (--b.t > 0) continue; this.bs = this.bs.filter(q => q != b);
+              shake = Math.max(shake, b.big ? 22 : 14); sm(b.big ? 70 : 110, .5, 'sawtooth', .16, 30); pt(b.x, b.y, 0, 0, 20, '#ffb347', b.R, { ring: 1 });
+              for (let i = 0; i < (b.big ? 90 : 50); i++) { const a = R(0, 7), s = R(1, b.big ? 10 : 7); pt(b.x, b.y, Math.cos(a) * s, Math.sin(a) * s, R(25, 60), ['#ff6a3d', '#ffd24a', '#fff', '#ff3b3b'][i % 4], R(4, 12), { circ: 1, g: .03 }) }
+              const hit = alvos.filter(t => Math.hypot(t.x - b.x, t.y - b.y) < b.R + t.r); combo = Math.min(10, Math.max(1, hit.length)); comboT = 120;
+              hit.forEach(t => destruir(t, 'boom'));
+              for (const o of this.bs) if (Math.hypot(o.x - b.x, o.y - b.y) < b.R) o.t = Math.min(o.t, 10)
+            }
+          },
+          drw() {
+            grade('#2a2418'); for (const t of alvos) card(t, {});
+            for (const b of this.bs) {
+              g.globalAlpha = .1; g.fillStyle = '#f64'; g.beginPath(); g.arc(b.x, b.y, b.R, 0, 7); g.fill(); g.globalAlpha = 1;
+              g.fillStyle = '#000'; g.beginPath(); g.arc(b.x, b.y, b.big ? 16 : 11, 0, 7); g.fill(); g.fillStyle = tick % 6 < 3 ? '#ff0' : '#f60'; g.beginPath(); g.arc(b.x + 6, b.y - (b.big ? 18 : 13), 4, 0, 7); g.fill();
+              g.fillStyle = '#fff'; g.font = 'bold 12px Courier New'; g.textAlign = 'center'; g.fillText(Math.ceil(b.t / 60), b.x, b.y + 4)
+            }
+          }
+        },
+
+        // MODO 5: BURACO NEGRO (física de atração gravitacional)
+        buraco: {
+          max: 14, dica: 'Mova o mouse: o buraco negro 🕳️ suga os arquivos. Segure o clique para sugar com muito mais força!',
+          place(t) { t.r = Math.min(t.r, 32); t.x = R(60, W - 60); t.y = R(60, H - 60); t.vx = R(-1, 1); t.vy = R(-1, 1); t.rot = 0; t.sx = 1; t.sy = 1; return true },
+          upd() {
+            const k = held ? 5200 : 1500;
+            for (const t of alvos.slice()) {
+              const dx = mouse.x - t.x, dy = mouse.y - t.y, d = Math.hypot(dx, dy) || 1, a = k / (d * d + 900);
+              t.vx += dx / d * a - dy / d * a * .5; t.vy += dy / d * a + dx / d * a * .5; t.vx *= d < 170 ? .985 : .995; t.vy *= d < 170 ? .985 : .995;
+              const v = Math.hypot(t.vx, t.vy); if (v > 9) { t.vx *= 9 / v; t.vy *= 9 / v } t.x += t.vx; t.y += t.vy;
+              if (d > 170) { if (t.x < t.r || t.x > W - t.r) t.vx *= -1; if (t.y < t.r || t.y > H - t.r) t.vy *= -1; t.x = Math.max(t.r, Math.min(W - t.r, t.x)); t.y = Math.max(t.r, Math.min(H - t.r, t.y)) }
+              t.sx = d < 170 ? Math.max(.2, d / 170) : 1; t.sy = d < 170 ? 1 + (1 - d / 170) * .9 : 1; t.rot = Math.atan2(dy, dx) - Math.PI / 2;
+              if (d < 22) destruir(t, 'sugado')
+            }
+          },
+          drw() {
+            g.fillStyle = '#05050f'; g.fillRect(0, 0, W, H); g.fillStyle = '#fff'; for (let i = 0; i < 60; i++)g.fillRect((i * 127) % W, (i * 71) % H, 1.5, 1.5);
+            for (const t of alvos) card(t, { rot: t.rot, sx: t.sx, sy: t.sy, nolabel: 1 });
+            const r = held ? 34 : 24; for (let k = 0; k < 3; k++) { g.strokeStyle = ['#ff9a2e', '#c58bff', '#6a5cff'][k]; g.lineWidth = 4 - k; g.beginPath(); g.arc(mouse.x, mouse.y, r + 8 + k * 7, tick * .08 * (k + 1), tick * .08 * (k + 1) + 3.8); g.stroke() }
+            g.fillStyle = '#000'; g.beginPath(); g.arc(mouse.x, mouse.y, r, 0, 7); g.fill()
+          }
+        }
+      };
+
+      // --- LOOP PRINCIPAL (Game Loop) ---
+
+      // Atualiza a lógica de física, estado e spawn de arquivos
+      function update() {
+        tick++; if (state != 'jogo') return;
+        while (alvos.length < M.max && fila.length) { const t = fila[0]; if (!M.place(t)) break; alvos.push(fila.shift()) }
+        M.upd();
+        for (const p of parts) { p.x += p.vx; p.y += p.vy; p.vy += p.g || 0; p.t-- } parts = parts.filter(p => p.t > 0);
+        if (comboT > 0 && --comboT == 0) combo = 1; if (shake > 0) shake--; fim()
+      }
+      // Limpa a tela e desenha todos os elementos, partículas e UI
+      function draw() {
+        g.save(); if (state == 'jogo' && shake > 0) g.translate(R(-5, 5), R(-5, 5));
+        if (state != 'jogo' || !M) { g.fillStyle = '#1a1a2a'; g.fillRect(0, 0, W, H); g.restore(); return }
+        M.drw();
+        for (const p of parts) {
+          g.globalAlpha = Math.min(1, p.t / 20);
+          if (p.txt) { g.fillStyle = p.c; g.font = 'bold 16px Courier New'; g.textAlign = 'center'; g.fillText(p.txt, p.x, p.y) }
+          else if (p.ring) { g.strokeStyle = p.c; g.lineWidth = 4; g.beginPath(); g.arc(p.x, p.y, p.s * (1 - p.t / p.t0), 0, 7); g.stroke() }
+          else if (p.circ) { g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, Math.max(.5, p.s * p.t / p.t0), 0, 7); g.fill() }
+          else { g.fillStyle = p.c; g.fillRect(p.x, p.y, p.s, p.s) }
+        }
+        g.globalAlpha = 1; if (M.cur) { g.font = '30px serif'; g.textAlign = 'center'; g.fillText(M.cur, mouse.x, mouse.y + 10) }
+        g.restore();
+        $('sc').textContent = score; $('cb').textContent = 'x' + combo; $('rs').textContent = alvos.length + fila.length; $('ap').textContent = apagados.length
+      }
+
+      function pos(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height } }
+      // --- CONTROLES (Event Listeners) ---
+      cv.addEventListener('mousedown', e => {
+        if (state != 'jogo') return; mouse = pos(e); held = true; M.down && M.down(mouse, e.button)
+      });
+      cv.addEventListener('mousemove', e => {
+        mouse = pos(e); if (state == 'jogo' && M.move) M.move(mouse)
+      });
+      cv.addEventListener('mouseup', e => {
+        held = false; if (state == 'jogo' && M.up) M.up(pos(e))
+      });
+      cv.addEventListener('mouseleave', () => {
+        held = false; if (state == 'jogo' && M.up) M.up(mouse)
+      });
+      cv.addEventListener('contextmenu', e => e.preventDefault && e.preventDefault());
+      addEventListener('keydown', e => {
+        const k = (e.key || '').toLowerCase(); if (k == 'm') mudo = !mudo; else if (state == 'jogo' && M.key) M.key(k)
+      });
+      $('bPasta').addEventListener('click', escolher); $('bDemo').addEventListener('click', demo);
+      $('bGo').addEventListener('click', comecar); $('bVolta').addEventListener('click', () => tela(1)); $('bNova').addEventListener('click', () => {
+        state = 'menu'; tela(1)
+      });
+      tela(1); setInterval(() => {
+        update(); draw()
+      }, 1000 / 60);
+    })();
+
+  </script>
+</body>
+
+</html>
